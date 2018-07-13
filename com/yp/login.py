@@ -11,6 +11,7 @@ import wx
 import wx.xrc
 from com.yp.dbConnection import checkUser
 from com.yp.ticketSearch import TicketFrame
+from com.yp.getTrainNumber import denglu
 
 ###########################################################################
 ## Class BaseFrame
@@ -62,8 +63,8 @@ class BaseFrame(wx.Frame):
 
         self.Centre(wx.BOTH)
 
-        self.m_textCtrl3.SetValue("yp")
-        self.m_textCtrl4.SetValue("123")
+        self.m_textCtrl3.SetValue("335171242@qq.com")
+        self.m_textCtrl4.SetValue("yinpeng0927")
 
         # Connect Events
         self.m_sdbSizer2Cancel.Bind(wx.EVT_BUTTON, self.cancel_button_click)
@@ -81,13 +82,16 @@ class BaseFrame(wx.Frame):
         username = self.m_textCtrl3.GetValue()
         password = self.m_textCtrl4.GetValue()
         print(username + "---" + password)
-        result = checkUser(username, password)
-        if result == 1:
-            print("good")
-            self.Close()
-            frame2.Show(True)
-        else:
-            print("bad")
+        denglu(username, password)
+        self.Close()
+        frame2.Show(True)
+        # result = checkUser(username, password)
+        # if result == 1:
+        #     print("good")
+        #     self.Close()
+        #     frame2.Show(True)
+        # else:
+        #     print("bad")
 
 app = wx.App(False)
 #根据自己的类名来生成实例

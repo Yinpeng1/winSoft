@@ -2,7 +2,7 @@
 class Train(object):
 
     def __init__(self, trainType, depCity, arrCity, time, duration, businessSit, firstSit, secondSit, highSoft, soft, moveSoft, hardSoft, softSit, hardSit,
-                 noSit, other):
+                 noSit, other, operation):
         self.trainType = trainType
         self.depCity = depCity
         self.arrCity = arrCity
@@ -19,3 +19,4 @@ class Train(object):
         self.hardSit = hardSit
         self.noSit = noSit
         self.other = other
+        self.operation = operation

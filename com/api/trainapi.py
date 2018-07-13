@@ -81,9 +81,13 @@ def getData(depCity, arrCity, depDate):
         hardSit = item[24]
         noSit = item[23]
         other = item[22]
+        if item[0] == 'null':
+            operation = None
+        else:
+            operation = "预定"
         train = Train(train, start_station, end_station, start_time + "--" + end_time, duration, businessSit, firstSit,
               secondSit, highSoft,
-              soft, moveSoft, hardSoft, softSit, hardSit, noSit, other)
+              soft, moveSoft, hardSoft, softSit, hardSit, noSit, other, operation)
         list.append(train)
     return list
     # print(data)

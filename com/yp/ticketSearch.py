@@ -12,6 +12,7 @@ import wx.xrc
 import wx.grid
 from com.yp.TrainData import Train
 from com.yp.getTrainNumber import getTrainInfo
+from com.yp.getTrainNumber import denglu
 from com.api.trainapi import getData
 
 
@@ -69,7 +70,7 @@ class TicketFrame(wx.Frame):
         self.m_grid14.SetColLabelValue(13, "硬座")
         self.m_grid14.SetColLabelValue(14, "无座")
         self.m_grid14.SetColLabelValue(15, "其他")
-        self.m_grid14.SetColLabelValue(16, "预定")
+        self.m_grid14.SetColLabelValue(16, "操作")
 
         # Rows
         self.m_grid14.EnableDragRowSize(True)
@@ -156,8 +157,8 @@ class TicketFrame(wx.Frame):
         arrCity = self.m_textCtrl12.GetValue()
         depDate = self.m_textCtrl13.GetValue()
 
-        # list = getTrainInfo(depCity=depCity, arrCity=arrCity, depDate=depDate)
-        list = getData(depCity=depCity, arrCity=arrCity, depDate=depDate)
+        list = getTrainInfo(depCity=depCity, arrCity=arrCity, depDate=depDate)
+        # list = getData(depCity=depCity, arrCity=arrCity, depDate=depDate)
         # for i in list:
         #     print(i.trainType)
         if list:
@@ -178,7 +179,10 @@ class TicketFrame(wx.Frame):
                 self.m_grid14.SetCellValue(t, 13, list[t].hardSit)
                 self.m_grid14.SetCellValue(t, 14, list[t].noSit)
                 self.m_grid14.SetCellValue(t, 15, list[t].other)
-                self.m_grid14.SetCellValue(t, 16, "预定")
+                if list[t].operation:
+                    self.m_grid14.SetCellValue(t, 16, list[t].operation)
+                else:
+                    self.m_grid14.SetCellValue(t, 16, "--")
 
 
 # app = wx.App(False)

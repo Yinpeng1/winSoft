@@ -43,21 +43,29 @@ headers = {
 
 list = []
 
+chrome_options = Options()
+# chrome_options.add_argument('--headless')
+# chrome_options.add_argument('--disable-gpu')
+# chrome_options.add_argument("--proxy-server=http://39.135.24.11:80")
+browser = webdriver.Chrome("C:\chromedriver\chromedriver.exe", chrome_options=chrome_options)
+
 class TrainTicketSpider(object):
 
     def __init__(self, depCity, arrCity, depdate):
         self.depCity = depCity
         self.arrCity = arrCity
         self.depDate = depdate
-        chrome_options = Options()
+        # chrome_options = Options()
         # chrome_options.add_argument('--headless')
         # chrome_options.add_argument('--disable-gpu')
         # chrome_options.add_argument("--proxy-server=http://39.135.24.11:80")
-        self.browser = webdriver.Chrome("C:\chromedriver\chromedriver.exe", chrome_options=chrome_options)
+        # self.browser = webdriver.Chrome("C:\chromedriver\chromedriver.exe", chrome_options=chrome_options)
+        self.browser = browser
 
-    def crawl(self, url):
+    def crawl(self):
         # self.browser.set_page_load_timeout(30)
-        self.browser.get(url)
+        # self.browser.get(url)
+        self.browser.switch_to(1)
         WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.ID, "fromStationText")))
         time.sleep(1)
         self.browser.save_screenshot('1.png')
@@ -69,8 +77,8 @@ class TrainTicketSpider(object):
         toCity = self.browser.find_element_by_id("toStationText")
 
         # 出发时间
-        # jsString = "document.getElementsByName('departDate')[0].removeAttribute('readonly')"
-        # self.browser.execute_script(jsString)
+        jsString = "document.getElementById('train_date').removeAttribute('readonly')"
+        self.browser.execute_script(jsString)
         date = self.browser.find_element_by_id("train_date")
 
         # 搜索按钮
@@ -91,9 +99,11 @@ class TrainTicketSpider(object):
         toCityClick.click()
 
         date.click()
+        date.clear()
         time.sleep(0.5)
         date.send_keys(self.depDate)
 
+        time.sleep(0.5)
         searchBtn.click()
         WebDriverWait(self.browser, 6).until(EC.presence_of_element_located((By.CLASS_NAME, "t-list")))
         time.sleep(2)
@@ -168,10 +178,15 @@ class TrainTicketSpider(object):
 
         other = li.xpath('.//td[12]/text()')[0]
 
+        if li.xpath('.//td[13]/a/text()'):
+            operation = "预定"
+        else:
+            operation = None
         trainInfo = Train(train, start_station, end_station, start_time + "--" + end_time, duration, businessSit, firstSit, secondSit, highSoft,
-                          soft, moveSoft, hardSoft, softSit, hardSit, noSit, other)
+                          soft, moveSoft, hardSoft, softSit, hardSit, noSit, other, operation)
 
         list.append(trainInfo)
+
 
         # 参考票价
         # if li.xpath('.//td[@class="no-br"]/a'):
@@ -184,18 +199,108 @@ class TrainTicketSpider(object):
         # print('当前车次%s,[%s]票>>>' % (train, ticket_remain))
 
 
+class loginUser(object):
+
+    def __init__(self, url, username, password):
+        self.username = username
+        self.password = password
+        self.url = url
+        # chrome_options = Options()
+        # chrome_options.add_argument('--headless')
+        # chrome_options.add_argument('--disable-gpu')
+        # chrome_options.add_argument("--proxy-server=http://39.135.24.11:80")
+        # self.browser = webdriver.Chrome("C:\chromedriver\chromedriver.exe", chrome_options=chrome_options)
+        self.browser = browser
+
+
+    def crawl(self):
+
+        # self.browser.set_page_load_timeout(30)
+        self.browser.get(self.url)
+        WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "touclick-image")))
+        time.sleep(8)
+        username = self.browser.find_element_by_id("username")
+        password = self.browser.find_element_by_id("password")
+
+        button = self.browser.find_element_by_id("loginSub")
+
+        username.clear()
+        username.send_keys(self.username)
+        time.sleep(0.5)
+
+        password.clear()
+        password.send_keys(self.password)
+        time.sleep(0.5)
+
+        self.get_img()
+        aa = self.identityUmg()
+        for i in aa:
+            arr = str(i).split(" ")
+            for j in arr:
+                if int(j) > 4:
+                    y = 1
+                    x = int(j) - 1 - 4
+                else:
+                    y = 0
+                    x = int(j) - 1
+                left = 5 + (67 + 5) * x
+                top = 41 + (67 + 5) * y
+                right = left + 67
+                bottom = top + 67
+                action = ActionChains(self.browser)
+                action.move_to_element_with_offset(self.browser.find_element_by_class_name("touclick-image"),
+                                                   left + 40,
+                                                   top + 40).click().perform()
+        time.sleep(1)
+        button.click()
+        time.sleep(4)
+        WebDriverWait(self.browser, 10).until(EC.presence_of_element_located((By.ID, "my12306page")))
+        self.browser.find_element_by_id("selectYuding").click()
+        getTrainInfo("上海", "北京", "2018-07-20")
+
+    def get_img(self):
+        # self.browser.set_window_size(1920, 1080)
+        self.browser.save_screenshot('1.png')
+        img = self.browser.find_element_by_class_name("touclick-image")
+        print(img.location)  # 打印元素坐标
+        print(img.size)  # 打印元素大小
+        left = img.location['x']
+        top = img.location['y']
+        right = img.location['x'] + img.size['width']
+        bottom = img.location['y'] + img.size['height']
+        im = Image.open('1.png')
+        im = im.crop((left, top, right, bottom))
+        im.save('1.png')
+
+    def identityUmg(self):
+        files = {'file': open("1.png", 'rb')}
+        url = 'http://103.46.128.47:47720/'
+        request23 = requests.post(url=url, headers=headers, files=files)
+        # 自动解码
+        # print(request23.text)
+        imgre = re.compile(r'<B>(.*?)</B>')
+        res = re.findall(imgre, repr(request23.text))
+        print(res)
+        return res
+
 # if __name__ == '__main__':
 #     url = 'https://kyfw.12306.cn/otn/leftTicket/init'
 #     spider = TrainTicketSpider(depCity="上海", arrCity="北京", depdate="2018-07-20")
 #     spider.crawl(url)
 
 def getTrainInfo(depCity, arrCity, depDate):
-    url = 'https://kyfw.12306.cn/otn/leftTicket/init'
+    # url = 'https://kyfw.12306.cn/otn/leftTicket/init'
     spider = TrainTicketSpider(depCity=depCity, arrCity=arrCity, depdate=depDate)
-    spider.crawl(url)
+    spider.crawl()
     for i in list:
         print(i.trainType)
     return list
+
+def denglu(username, password):
+    url = 'https://kyfw.12306.cn/otn/login/init'
+    login = loginUser(url, username, password)
+    login.crawl()
+    # getTrainInfo(depCity, arrCity, depDate)
 
 
 
