@@ -12,6 +12,7 @@ import wx.xrc
 import wx.grid
 from com.yp.TrainData import Train
 from com.yp.getTrainNumber import getTrainInfo
+from com.api.trainapi import getData
 
 
 ###########################################################################
@@ -129,6 +130,10 @@ class TicketFrame(wx.Frame):
         self.m_menubar1 = wx.MenuBar(0)
         self.SetMenuBar(self.m_menubar1)
 
+        self.m_textCtrl11.SetValue("上海")
+        self.m_textCtrl12.SetValue("北京")
+        self.m_textCtrl13.SetValue("2018-07-19")
+
         self.Centre(wx.BOTH)
 
         # Connect Events
@@ -144,7 +149,8 @@ class TicketFrame(wx.Frame):
         arrCity = self.m_textCtrl12.GetValue()
         depDate = self.m_textCtrl13.GetValue()
 
-        list = getTrainInfo(depCity=depCity, arrCity=arrCity, depDate=depDate)
+        # list = getTrainInfo(depCity=depCity, arrCity=arrCity, depDate=depDate)
+        list = getData()
         for i in list:
             print(i.trainType)
         if list:
@@ -168,9 +174,9 @@ class TicketFrame(wx.Frame):
                 self.m_grid14.SetCellValue(t, 16, "预定")
 
 
-app = wx.App(False)
-# 根据自己的类名来生成实例
-frame = TicketFrame(None)
-frame.Show(True)
-# start the applications
-app.MainLoop()
+# app = wx.App(False)
+# # 根据自己的类名来生成实例
+# frame = TicketFrame(None)
+# frame.Show(True)
+# # start the applications
+# app.MainLoop()

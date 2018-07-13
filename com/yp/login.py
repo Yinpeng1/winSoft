@@ -10,6 +10,7 @@
 import wx
 import wx.xrc
 from com.yp.dbConnection import checkUser
+from com.yp.ticketSearch import TicketFrame
 
 ###########################################################################
 ## Class BaseFrame
@@ -61,6 +62,9 @@ class BaseFrame(wx.Frame):
 
         self.Centre(wx.BOTH)
 
+        self.m_textCtrl3.SetValue("yp")
+        self.m_textCtrl4.SetValue("123")
+
         # Connect Events
         self.m_sdbSizer2Cancel.Bind(wx.EVT_BUTTON, self.cancel_button_click)
         self.m_sdbSizer2OK.Bind(wx.EVT_BUTTON, self.ok_button_click)
@@ -80,13 +84,17 @@ class BaseFrame(wx.Frame):
         result = checkUser(username, password)
         if result == 1:
             print("good")
+            frame.Show(False)
+            frame2.Show(True)
         else:
             print("bad")
 
 app = wx.App(False)
 #根据自己的类名来生成实例
 frame = BaseFrame(None)
+frame2 = TicketFrame(None)
 frame.Show(True)
+frame2.Show(False)
 #start the applications
 app.MainLoop()
 
