@@ -25,7 +25,7 @@ class TicketFrame(wx.Frame):
         wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=wx.EmptyString, pos=wx.DefaultPosition,
                           size=wx.Size(1500, 450), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
 
-        self.SetSizeHintsSz(wx.DefaultSize, wx.DefaultSize)
+        self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
 
         sbSizer7 = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, u"label"), wx.VERTICAL)
 
@@ -40,10 +40,13 @@ class TicketFrame(wx.Frame):
         # Grid
         # self.m_grid14.Create(parent=)
         self.m_grid14.CreateGrid(100, 17)
-        self.m_grid14.EnableEditing(True)
+        self.m_grid14.SetMinSize(wx.Size(1480, 300))
+        self.m_grid14.EnableEditing(False)
         self.m_grid14.EnableGridLines(True)
         self.m_grid14.EnableDragGridSize(False)
         self.m_grid14.SetMargins(0, 0)
+
+        self.m_button3 = wx.Button(self.m_panel3, wx.ID_ANY, u"预定", wx.DefaultPosition, wx.DefaultSize, 0)
 
         # Columns
         self.m_grid14.EnableDragColMove(False)
@@ -78,7 +81,7 @@ class TicketFrame(wx.Frame):
         # Cell Defaults
         self.m_grid14.SetDefaultCellTextColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT))
         self.m_grid14.SetDefaultCellAlignment(wx.ALIGN_CENTRE, wx.ALIGN_TOP)
-        gSizer6.Add(self.m_grid14, 0, wx.SHAPED, 5)
+        gSizer6.Add(self.m_grid14, 0, wx.ALL, 5)
 
         self.m_panel3.SetSizer(gSizer6)
         self.m_panel3.Layout()
@@ -137,10 +140,14 @@ class TicketFrame(wx.Frame):
         self.Centre(wx.BOTH)
 
         # Connect Events
+        self.m_grid14.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self.reserve_ticket)
         self.m_button2.Bind(wx.EVT_BUTTON, self.search_click)
 
     def __del__(self):
         pass
+
+    def reserve_ticket(self, event):
+        event.Skip()
 
     # Virtual event handlers, overide them in your derived class
     def search_click(self, event):
@@ -150,9 +157,9 @@ class TicketFrame(wx.Frame):
         depDate = self.m_textCtrl13.GetValue()
 
         # list = getTrainInfo(depCity=depCity, arrCity=arrCity, depDate=depDate)
-        list = getData()
-        for i in list:
-            print(i.trainType)
+        list = getData(depCity=depCity, arrCity=arrCity, depDate=depDate)
+        # for i in list:
+        #     print(i.trainType)
         if list:
             for t in range(len(list)):
                 self.m_grid14.SetCellValue(t, 0, list[t].trainType)

@@ -38,20 +38,35 @@ values = {
 
 list=[]
 
-def getData():
-    url = 'https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date=2018-07-19&leftTicketDTO.from_station=SHH&leftTicketDTO.to_station=BJP&purpose_codes=ADULT'
+def getData(depCity, arrCity, depDate):
+    url = 'https://kyfw.12306.cn/otn/leftTicket/query?leftTicketDTO.train_date='+depDate+'&leftTicketDTO.from_station=SHH&leftTicketDTO.to_station=BJP&purpose_codes=ADULT'
     # 创建一个request,放入我们的地址、数据、头
     request23 = urllib.request.Request(url, headers=headers)
     # 访问
     html = urllib.request.urlopen(request23).read().decode('utf-8')
     html = json.loads(html)
+    place = html['data']['map']
     data = html['data']['result']
     for i in data:
         item = str(i).split("|")
-        print(len(item))
+        # print(len(item))
         train = item[3]
-        start_station = "上海"
-        end_station = "北京"
+        if item[4] == 'HGH':
+            start_station = "上海虹桥"
+        else:
+            start_station = place.get(item[4])
+        end_station = place.get(item[5])
+        print(start_station+"---"+end_station)
+        # if item[4] == "AOH":
+        #     start_station = "上海虹桥"
+        # else:
+        #     start_station = "上海"
+        # if item[5] == "BJP":
+        #     end_station ="北京"
+        # else:
+        #     end_station = "北京南"
+        # start_station = "上海"
+        # end_station = "北京"
         start_time = item[8]
         end_time = item[9]
         duration = item[10]

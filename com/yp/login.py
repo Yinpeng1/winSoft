@@ -22,7 +22,7 @@ class BaseFrame(wx.Frame):
         wx.Frame.__init__(self, parent, id=wx.ID_ANY, title=wx.EmptyString, pos=wx.DefaultPosition,
                           size=wx.Size(500, 300), style=wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL)
 
-        self.SetSizeHintsSz(wx.DefaultSize, wx.DefaultSize)
+        self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
 
         sbSizer1 = wx.StaticBoxSizer(wx.StaticBox(self, wx.ID_ANY, u"抢票系统登陆"), wx.VERTICAL)
 
@@ -84,7 +84,7 @@ class BaseFrame(wx.Frame):
         result = checkUser(username, password)
         if result == 1:
             print("good")
-            frame.Show(False)
+            self.Close()
             frame2.Show(True)
         else:
             print("bad")
